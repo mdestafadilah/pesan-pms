@@ -28,15 +28,15 @@ function SignupForm() {
 
     try {
       // Register the user using Better Auth
-      const { error } = await signUp.email({
+      const result = await signUp.email({
         name,
         email,
         password,
-        callbackURL: "/dashboard"
+        // Don't use callbackURL, we'll handle the redirect manually
       });
 
-      if (error) {
-        setError(error.message || "Failed to register");
+      if (result && result.error) {
+        setError(result.error.message || "Failed to register");
         setIsLoading(false);
         return;
       }
@@ -44,10 +44,15 @@ function SignupForm() {
       // With Better Auth, users are automatically signed in after registration
       // unless autoSignIn is set to false in the auth config
 
-      // Redirect to dashboard on successful signup and login
-      router.push("/dashboard");
-      router.refresh();
+      // Wait for the session to be established
+      // This ensures the session is properly synced before redirecting
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Use window.location for a full page navigation instead of router.push
+      // This ensures the page is fully reloaded with the new session
+      window.location.href = "/dashboard";
     } catch (error: any) {
+      console.error("Signup error:", error);
       setError(error.message || "An unexpected error occurred. Please try again.");
       setIsLoading(false);
     }
