@@ -1,6 +1,7 @@
 "use client"
 
 import type * as React from "react"
+import { authClient } from "@/lib/auth-client"
 import {
   BarChart3,
   BedDouble,
@@ -226,6 +227,15 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: session } = authClient.useSession()
+
+  // Get user data from session or use default data
+  const userData = {
+    name: session?.user?.name || data.user.name,
+    email: session?.user?.email || data.user.email,
+    avatar: session?.user?.image || data.user.avatar,
+  }
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -236,7 +246,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProperties properties={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={userData} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

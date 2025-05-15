@@ -2,7 +2,6 @@
 
 import { usePathname } from "next/navigation"
 import { AppSidebar } from "../../components/app-sidebar"
-import { LogoutButton } from "@/components/logout-button"
 import { authClient } from "@/lib/auth-client"
 import AuthGuard from "./auth-guard"
 import {
@@ -15,7 +14,6 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 export default function DashboardLayout({
   children,
@@ -29,15 +27,6 @@ export default function DashboardLayout({
   const segments = pathname.split('/').filter(Boolean)
   const currentPage = segments.length > 1 ? segments[segments.length - 1] : 'overview'
   const pageTitle = currentPage.charAt(0).toUpperCase() + currentPage.slice(1)
-
-  // Get user initials for avatar
-  const userInitials = session?.user?.name
-    ? session.user.name
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-    : 'U'
   return (
     <AuthGuard>
       <SidebarProvider>
@@ -60,19 +49,7 @@ export default function DashboardLayout({
                   </BreadcrumbList>
                 </Breadcrumb>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="hidden md:flex items-center gap-2">
-                  {session?.user?.name && (
-                    <span className="text-sm font-medium">
-                      {session.user.name}
-                    </span>
-                  )}
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback>{userInitials}</AvatarFallback>
-                  </Avatar>
-                </div>
-                <LogoutButton />
-              </div>
+              {/* Right side of navbar intentionally left empty */}
             </div>
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">

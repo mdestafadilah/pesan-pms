@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { Building, Forward, MoreHorizontal, Pencil, Trash2, type LucideIcon } from "lucide-react"
 
 import {
@@ -29,6 +30,7 @@ export function NavProperties({
   }[]
 }) {
   const { isMobile } = useSidebar()
+  const router = useRouter()
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -37,10 +39,13 @@ export function NavProperties({
         {properties.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
-              <a href={item.url}>
+              <div
+                onClick={() => router.push(item.url)}
+                className="cursor-pointer"
+              >
                 <item.icon />
                 <span>{item.name}</span>
-              </a>
+              </div>
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -54,20 +59,20 @@ export function NavProperties({
                 side={isMobile ? "bottom" : "right"}
                 align={isMobile ? "end" : "start"}
               >
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push(item.url)}>
                   <Building className="text-muted-foreground" />
                   <span>View Property</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push(`${item.url}/edit`)}>
                   <Pencil className="text-muted-foreground" />
                   <span>Edit Property</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push(`${item.url}/share`)}>
                   <Forward className="text-muted-foreground" />
                   <span>Share Property</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push(`${item.url}/delete`)}>
                   <Trash2 className="text-muted-foreground" />
                   <span>Delete Property</span>
                 </DropdownMenuItem>
@@ -76,7 +81,10 @@ export function NavProperties({
           </SidebarMenuItem>
         ))}
         <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
+          <SidebarMenuButton
+            className="text-sidebar-foreground/70"
+            onClick={() => router.push("/dashboard/properties")}
+          >
             <MoreHorizontal className="text-sidebar-foreground/70" />
             <span>View All Properties</span>
           </SidebarMenuButton>

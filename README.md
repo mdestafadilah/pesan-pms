@@ -14,6 +14,10 @@
   <strong>Pesan PMS</strong> is an open-source property management system designed to help manage hotels, homestays, villas, and other accommodation properties.
 </p>
 
+<p align="center">
+  <img src="public/frontend-screenshot.png" alt="Pesan PMS Dashboard" width="100%"/>
+</p>
+
 ## Features
 
 - **Dashboard Overview**: Get a quick glance at your property's performance
@@ -27,7 +31,8 @@
 
 ## Roadmap
 
-- [ ] Authentication system
+- [x] Authentication system
+- [x] Dashboard UI with charts and reports
 - [ ] Property setup wizard
 - [ ] Room/unit inventory management
 - [ ] Booking calendar
