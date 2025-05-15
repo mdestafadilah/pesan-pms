@@ -9,6 +9,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // External packages that should be bundled
+  serverExternalPackages: ['better-sqlite3'],
 }
 
 export default nextConfig

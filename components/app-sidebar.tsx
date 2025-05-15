@@ -2,53 +2,52 @@
 
 import type * as React from "react"
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
+  BarChart3,
+  BedDouble,
+  Building,
+  Calendar,
+  CreditCard,
+  Home,
+  Hotel,
+  Settings,
+  Users,
 } from "lucide-react"
 
 import { NavMain } from "./nav-main"
-import { NavProjects } from "./nav-projects"
+import { NavProperties } from "./nav-properties"
 import { NavUser } from "./nav-user"
-import { TeamSwitcher } from "./team-switcher"
+import { PropertySwitcher } from "./property-switcher"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar"
 
-// This is sample data.
+// Pesan PMS data
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: "John Doe",
+    email: "john@example.com",
+    avatar: "/avatars/user.jpg",
   },
-  teams: [
+  properties: [
     {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      name: "Sunset Villa",
+      logo: Hotel,
+      plan: "Active",
     },
     {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
+      name: "Mountain Lodge",
+      logo: Building,
+      plan: "Active",
     },
     {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
+      name: "Beach Resort",
+      logo: Home,
+      plan: "Inactive",
     },
   ],
   navMain: [
     {
       title: "Dashboard",
       url: "/dashboard",
-      icon: SquareTerminal,
+      icon: Home,
       isActive: true,
       items: [
         {
@@ -66,86 +65,162 @@ const data = {
       ],
     },
     {
-      title: "Models",
-      url: "#",
-      icon: Bot,
+      title: "Properties",
+      url: "/dashboard/properties",
+      icon: Building,
       items: [
         {
-          title: "Genesis",
-          url: "#",
+          title: "All Properties",
+          url: "/dashboard/properties",
         },
         {
-          title: "Explorer",
-          url: "#",
+          title: "Add Property",
+          url: "/dashboard/properties/add",
         },
         {
-          title: "Quantum",
-          url: "#",
+          title: "Property Types",
+          url: "/dashboard/properties/types",
         },
       ],
     },
     {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
+      title: "Rooms",
+      url: "/dashboard/rooms",
+      icon: BedDouble,
       items: [
         {
-          title: "Introduction",
-          url: "#",
+          title: "All Rooms",
+          url: "/dashboard/rooms",
         },
         {
-          title: "Get Started",
-          url: "#",
+          title: "Add Room",
+          url: "/dashboard/rooms/add",
         },
         {
-          title: "Tutorials",
-          url: "#",
+          title: "Room Types",
+          url: "/dashboard/rooms/types",
         },
         {
-          title: "Changelog",
-          url: "#",
+          title: "Availability",
+          url: "/dashboard/rooms/availability",
+        },
+      ],
+    },
+    {
+      title: "Bookings",
+      url: "/dashboard/bookings",
+      icon: Calendar,
+      items: [
+        {
+          title: "All Bookings",
+          url: "/dashboard/bookings",
+        },
+        {
+          title: "New Booking",
+          url: "/dashboard/bookings/new",
+        },
+        {
+          title: "Calendar",
+          url: "/dashboard/bookings/calendar",
+        },
+        {
+          title: "Check-in/out",
+          url: "/dashboard/bookings/checkin",
+        },
+      ],
+    },
+    {
+      title: "Guests",
+      url: "/dashboard/guests",
+      icon: Users,
+      items: [
+        {
+          title: "All Guests",
+          url: "/dashboard/guests",
+        },
+        {
+          title: "Add Guest",
+          url: "/dashboard/guests/add",
+        },
+      ],
+    },
+    {
+      title: "Payments",
+      url: "/dashboard/payments",
+      icon: CreditCard,
+      items: [
+        {
+          title: "All Payments",
+          url: "/dashboard/payments",
+        },
+        {
+          title: "New Payment",
+          url: "/dashboard/payments/new",
+        },
+        {
+          title: "Invoices",
+          url: "/dashboard/payments/invoices",
+        },
+      ],
+    },
+    {
+      title: "Reports",
+      url: "/dashboard/reports",
+      icon: BarChart3,
+      items: [
+        {
+          title: "Occupancy",
+          url: "/dashboard/reports/occupancy",
+        },
+        {
+          title: "Revenue",
+          url: "/dashboard/reports/revenue",
+        },
+        {
+          title: "Guest Statistics",
+          url: "/dashboard/reports/guests",
         },
       ],
     },
     {
       title: "Settings",
-      url: "#",
-      icon: Settings2,
+      url: "/dashboard/settings",
+      icon: Settings,
       items: [
         {
           title: "General",
-          url: "#",
+          url: "/dashboard/settings",
         },
         {
-          title: "Team",
-          url: "#",
+          title: "Users",
+          url: "/dashboard/settings/users",
         },
         {
-          title: "Billing",
-          url: "#",
+          title: "Taxes & Fees",
+          url: "/dashboard/settings/taxes",
         },
         {
-          title: "Limits",
-          url: "#",
+          title: "Payment Methods",
+          url: "/dashboard/settings/payment-methods",
         },
       ],
     },
   ],
   projects: [
     {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
+      name: "Sunset Villa",
+      url: "/dashboard/properties/1",
+      icon: Hotel,
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
+      name: "Mountain Lodge",
+      url: "/dashboard/properties/2",
+      icon: Building,
     },
     {
-      name: "Travel",
-      url: "#",
-      icon: Map,
+      name: "Beach Resort",
+      url: "/dashboard/properties/3",
+      icon: Home,
     },
   ],
 }
@@ -154,11 +229,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <PropertySwitcher properties={data.properties} />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavProperties properties={data.projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
