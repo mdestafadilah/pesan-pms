@@ -1,5 +1,5 @@
-# Use Bun as the base image
-FROM oven/bun:1.2.5 AS builder
+# Use Node.js as the base image for better compatibility with native modules
+FROM node:20-bullseye AS builder
 
 WORKDIR /app
 
@@ -11,6 +11,10 @@ RUN apt-get update -y && apt-get install -y \
     build-essential \
     g++ \
     make
+
+# Install Bun
+RUN curl -fsSL https://bun.sh/install | bash
+ENV PATH="/root/.bun/bin:${PATH}"
 
 # Copy package files first to leverage Docker layer caching
 COPY package.json ./
@@ -24,9 +28,10 @@ COPY drizzle.config.ts ./
 
 # Install dependencies with special handling for better-sqlite3
 ENV PYTHON=/usr/bin/python3
-# First install better-sqlite3 separately with specific options
-RUN bun add better-sqlite3 --no-save
-# Then install all dependencies
+
+# First install dependencies with npm to ensure native modules are built correctly
+RUN npm install better-sqlite3 --build-from-source
+# Then install all dependencies with Bun
 RUN bun install --frozen-lockfile
 
 # Add sharp for image optimization
@@ -42,7 +47,7 @@ COPY . .
 RUN bun run build
 
 # Production image, copy all the files and run next
-FROM oven/bun:1.2.5 AS runner
+FROM node:20-bullseye-slim AS runner
 
 WORKDIR /app
 
@@ -55,13 +60,18 @@ RUN apt-get update -y && apt-get install -y \
     python3 \
     build-essential \
     g++ \
-    make && \
+    make \
+    curl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Install Bun
+RUN curl -fsSL https://bun.sh/install | bash
+ENV PATH="/root/.bun/bin:${PATH}"
+
 # Create a non-root user and set permissions
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs && \
+RUN groupadd --system --gid 1001 nodejs && \
+    useradd --system --uid 1001 --gid nodejs nextjs && \
     mkdir -p /app/data && \
     chmod 777 /app/data && \
     chown -R nextjs:nodejs /app
@@ -69,19 +79,12 @@ RUN addgroup --system --gid 1001 nodejs && \
 # Copy package files first
 COPY --from=builder --chown=nextjs:nodejs /app/package.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/bun.lock* ./
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 
 # Copy Drizzle files
 COPY --from=builder --chown=nextjs:nodejs /app/db ./db
 COPY --from=builder --chown=nextjs:nodejs /app/drizzle ./drizzle
 COPY --from=builder --chown=nextjs:nodejs /app/drizzle.config.ts ./drizzle.config.ts
-
-# Install dependencies with special handling for better-sqlite3
-ENV PYTHON=/usr/bin/python3
-USER root
-RUN bun add better-sqlite3 --no-save && \
-    bun install --production --frozen-lockfile && \
-    chown -R nextjs:nodejs /app
-USER nextjs
 
 # Copy the rest of the application
 COPY --from=builder --chown=nextjs:nodejs /app/next.config.mjs ./
@@ -95,7 +98,7 @@ USER nextjs
 EXPOSE 3000
 
 # Run Drizzle migrations and start the application
-CMD ["sh", "-c", "mkdir -p /app/data && chmod 777 /app/data && bunx drizzle-kit push && bun run start"]
+CMD ["sh", "-c", "mkdir -p /app/data && chmod 777 /app/data && npx drizzle-kit push && bun run start"]
 
 # USAGE INSTRUCTIONS:
 # Run the container with all environment variables passed at runtime:
