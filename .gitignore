@@ -29,4 +29,9 @@ next-env.d.ts
 # database
 *.db
 *.db-journal
+*.db-shm
+*.db-wal
 pesan-pms.db
+pesan-pms.db-shm
+pesan-pms.db-wal
+/data/
