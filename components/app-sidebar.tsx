@@ -50,20 +50,6 @@ const data = {
       url: "/dashboard",
       icon: Home,
       isActive: true,
-      items: [
-        {
-          title: "Overview",
-          url: "/dashboard",
-        },
-        {
-          title: "Profile",
-          url: "/dashboard/profile",
-        },
-        {
-          title: "Settings",
-          url: "/dashboard/settings",
-        },
-      ],
     },
     {
       title: "Properties",
@@ -190,19 +176,19 @@ const data = {
       items: [
         {
           title: "General",
-          url: "/dashboard/settings",
+          url: "/dashboard/settings?tab=general",
         },
         {
           title: "Users",
-          url: "/dashboard/settings/users",
+          url: "/dashboard/settings?tab=users",
         },
         {
           title: "Taxes & Fees",
-          url: "/dashboard/settings/taxes",
+          url: "/dashboard/settings?tab=taxes",
         },
         {
           title: "Payment Methods",
-          url: "/dashboard/settings/payment-methods",
+          url: "/dashboard/settings?tab=payment-methods",
         },
       ],
     },

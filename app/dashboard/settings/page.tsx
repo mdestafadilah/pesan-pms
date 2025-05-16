@@ -1,26 +1,46 @@
 "use client";
 
-import { useState } from "react";
-import { authClient } from "@/lib/auth-client";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PasskeyManager } from "@/components/passkey-manager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SessionManager } from "@/components/session-manager";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function SettingsPage() {
-  const { data: session } = authClient.useSession();
-  const [name, setName] = useState(session?.user?.name || "");
-  const [email, setEmail] = useState(session?.user?.email || "");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+
+  const [activeTab, setActiveTab] = useState("general");
+  const [hotelName, setHotelName] = useState("Pesan PMS");
+  const [currency, setCurrency] = useState("USD");
+  const [timezone, setTimezone] = useState("UTC");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSaveProfile = async (e: React.FormEvent) => {
+  // Set the active tab based on URL parameter
+  useEffect(() => {
+    const validTabs = ["general", "users", "taxes", "payment-methods"];
+    if (tabParam && validTabs.includes(tabParam)) {
+      setActiveTab(tabParam);
+    } else {
+      setActiveTab("general");
+    }
+  }, [tabParam]);
+
+  // Handle tab change
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    router.push(`/dashboard/settings?tab=${value}`);
+  };
+
+  const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Here you would implement the API call to update the user profile
+    // Here you would implement the API call to update the system settings
     // For now, we'll just simulate a delay
     setTimeout(() => {
       setIsLoading(false);
@@ -30,51 +50,66 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">Settings</h3>
+        <h3 className="text-lg font-medium">System Settings</h3>
         <p className="text-sm text-muted-foreground">
-          Manage your account settings and preferences.
+          Manage your system settings and preferences.
         </p>
       </div>
 
-      <Tabs defaultValue="profile" className="space-y-4">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
         <TabsList>
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
-          <TabsTrigger value="sessions">Sessions</TabsTrigger>
+          <TabsTrigger value="general">General</TabsTrigger>
+          <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="taxes">Taxes & Fees</TabsTrigger>
+          <TabsTrigger value="payment-methods">Payment Methods</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="profile">
+        <TabsContent value="general">
           <Card>
             <CardHeader>
-              <CardTitle>Profile</CardTitle>
+              <CardTitle>General Settings</CardTitle>
               <CardDescription>
-                Update your personal information
+                Configure your property management system
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSaveProfile} className="space-y-4">
+              <form onSubmit={handleSaveSettings} className="space-y-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="name">Name</Label>
+                  <Label htmlFor="hotelName">Property Name</Label>
                   <Input
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Your name"
+                    id="hotelName"
+                    value={hotelName}
+                    onChange={(e) => setHotelName(e.target.value)}
+                    placeholder="Your property name"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Your email"
-                    disabled
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Email cannot be changed. Contact support if you need to update your email.
-                  </p>
+                  <Label htmlFor="currency">Default Currency</Label>
+                  <Select value={currency} onValueChange={setCurrency}>
+                    <SelectTrigger id="currency">
+                      <SelectValue placeholder="Select currency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="USD">USD - US Dollar</SelectItem>
+                      <SelectItem value="EUR">EUR - Euro</SelectItem>
+                      <SelectItem value="GBP">GBP - British Pound</SelectItem>
+                      <SelectItem value="IDR">IDR - Indonesian Rupiah</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="timezone">Timezone</Label>
+                  <Select value={timezone} onValueChange={setTimezone}>
+                    <SelectTrigger id="timezone">
+                      <SelectValue placeholder="Select timezone" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="UTC">UTC</SelectItem>
+                      <SelectItem value="Asia/Jakarta">Asia/Jakarta</SelectItem>
+                      <SelectItem value="America/New_York">America/New_York</SelectItem>
+                      <SelectItem value="Europe/London">Europe/London</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <Button type="submit" disabled={isLoading}>
                   {isLoading ? "Saving..." : "Save Changes"}
@@ -84,33 +119,61 @@ export default function SettingsPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="security">
-          <div className="grid gap-4">
-            <PasskeyManager />
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Password</CardTitle>
-                <CardDescription>
-                  Change your password
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">
-                  We recommend using passkeys instead of passwords for better security.
-                </p>
-                <Button variant="outline">
-                  Change Password
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+        <TabsContent value="users">
+          <Card>
+            <CardHeader>
+              <CardTitle>User Management</CardTitle>
+              <CardDescription>
+                Manage system users and permissions
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                This section allows you to manage users who have access to the system.
+              </p>
+              <Button variant="outline">
+                Add New User
+              </Button>
+            </CardContent>
+          </Card>
         </TabsContent>
 
-        <TabsContent value="sessions">
-          <div className="grid gap-4">
-            <SessionManager />
-          </div>
+        <TabsContent value="taxes">
+          <Card>
+            <CardHeader>
+              <CardTitle>Taxes & Fees</CardTitle>
+              <CardDescription>
+                Configure taxes and additional fees
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Set up taxes and additional fees that will be applied to bookings.
+              </p>
+              <Button variant="outline">
+                Add New Tax/Fee
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="payment-methods">
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment Methods</CardTitle>
+              <CardDescription>
+                Configure accepted payment methods
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Set up payment methods that your property accepts.
+              </p>
+              <Button variant="outline">
+                Add Payment Method
+              </Button>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
