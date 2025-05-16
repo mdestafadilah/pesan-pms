@@ -89,7 +89,24 @@ After running these commands:
 
 ### Option 2: Using Docker
 
-Coming soon! We're working on Docker support for easier deployment.
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/pesan-pms.git
+cd pesan-pms
+
+# Create a .env file for Docker (or use the provided example)
+cp .env.docker .env
+
+# Build and start the Docker container
+docker-compose up -d
+
+# Access the application at http://localhost:3000
+```
+
+The Docker setup will:
+- Build the application in a container
+- Store the SQLite database in a persistent volume
+- Run the application on port 3000
 
 ## Contributing
 
